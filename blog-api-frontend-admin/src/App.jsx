@@ -10,19 +10,24 @@ function App() {
     async function fetchUserData() {
       try {
         const url = "http://localhost:5000/api/posts";
-        const response = await fetch(url, {
-          mode: "cors",
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await fetch(url, {
+            mode: "cors",
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+          }
+          const data = await response.json();
+          setUserData(data);
+        } else {
+          throw new Error("Not token");
         }
-        const data = await response.json();
-        setUserData(data);
       } catch (err) {
         setError(err.message);
       } finally {
